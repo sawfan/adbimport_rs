@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="astrodatabank_export">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="timestamp"/>
+        <xs:element ref="important_notice"/>
+        <xs:element maxOccurs="unbounded" ref="adb_entry"/>
+        <xs:element ref="adb_entry_count"/>
+      </xs:sequence>
+      <xs:attribute name="export_format" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="timestamp">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:NMTOKEN">
+          <xs:attribute name="host" use="required" type="xs:NCName"/>
+          <xs:attribute name="itst" use="required" type="xs:integer"/>
+          <xs:attribute name="user" use="required" type="xs:NCName"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="important_notice" type="xs:string"/>
+  <xs:element name="adb_entry">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="update_timestamp"/>
+        <xs:element ref="public_data"/>
+        <xs:element ref="text_data"/>
+        <xs:element ref="research_data"/>
+      </xs:sequence>
+      <xs:attribute name="adb_id" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="update_timestamp">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:NMTOKEN">
+          <xs:attribute name="itst" use="required" type="xs:integer"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="public_data">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="name"/>
+        <xs:element ref="sflname"/>
+        <xs:element minOccurs="0" ref="birthname"/>
+        <xs:element ref="gender"/>
+        <xs:element ref="roddenrating"/>
+        <xs:element ref="datatype"/>
+        <xs:element ref="bdata"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="bdata_alt"/>
+        <xs:element ref="scollector"/>
+        <xs:element ref="seditor"/>
+        <xs:element ref="sbiographer"/>
+        <xs:element ref="screationdate"/>
+        <xs:element ref="slasteditdate"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="name" type="xs:string"/>
+  <xs:element name="sflname" type="xs:string"/>
+  <xs:element name="birthname" type="xs:string"/>
+  <xs:element name="gender">
+    <xs:complexType mixed="true">
+      <xs:attribute name="csex" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="roddenrating">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:NCName">
+          <xs:attribute name="rrc" use="required" type="xs:integer"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="datatype">
+    <xs:complexType>
+      <xs:attribute name="dsc" use="required" type="xs:integer"/>
+      <xs:attribute name="dtc" use="required" type="xs:integer"/>
+      <xs:attribute name="sdatasource" use="required"/>
+      <xs:attribute name="sdatatype" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="bdata">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="sbdate"/>
+        <xs:element ref="sbdate_dmy"/>
+        <xs:element ref="sbtime"/>
+        <xs:element ref="place"/>
+        <xs:element ref="country"/>
+        <xs:element ref="positions"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="positions">
+    <xs:complexType>
+      <xs:attribute name="asc_degmin"/>
+      <xs:attribute name="asc_sign" type="xs:NCName"/>
+      <xs:attribute name="moon_degmin"/>
+      <xs:attribute name="moon_sign" use="required"/>
+      <xs:attribute name="sun_degmin"/>
+      <xs:attribute name="sun_sign" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="bdata_alt">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="event_type"/>
+        <xs:element minOccurs="0" ref="event_notes"/>
+        <xs:element ref="sbdate"/>
+        <xs:element ref="sbdate_dmy"/>
+        <xs:element ref="sbtime"/>
+        <xs:element ref="place"/>
+        <xs:element ref="country"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="event_type">
+    <xs:complexType mixed="true">
+      <xs:attribute name="event_id" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="event_notes" type="xs:string"/>
+  <xs:element name="scollector" type="xs:string"/>
+  <xs:element name="seditor" type="xs:string"/>
+  <xs:element name="sbiographer" type="xs:string"/>
+  <xs:element name="screationdate" type="xs:string"/>
+  <xs:element name="slasteditdate" type="xs:string"/>
+  <xs:element name="text_data">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="shortbiography"/>
+        <xs:element minOccurs="0" ref="wikipedia_link"/>
+        <xs:element ref="adb_link"/>
+        <xs:element ref="sourcenotes"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="shortbiography">
+    <xs:complexType mixed="true">
+      <xs:attribute name="copyright" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="wikipedia_link" type="xs:anyURI"/>
+  <xs:element name="adb_link" type="xs:anyURI"/>
+  <xs:element name="sourcenotes">
+    <xs:complexType mixed="true">
+      <xs:attribute name="copyright" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="research_data">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="categories"/>
+        <xs:element minOccurs="0" ref="relationships"/>
+        <xs:element minOccurs="0" ref="events"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="categories">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="category"/>
+      </xs:sequence>
+      <xs:attribute name="count" use="required" type="xs:integer"/>
+      <xs:attribute name="note" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="category">
+    <xs:complexType mixed="true">
+      <xs:attribute name="adb_id" use="required" type="xs:integer"/>
+      <xs:attribute name="cat_id" use="required" type="xs:integer"/>
+      <xs:attribute name="catnotes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="relationships">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="relationship"/>
+      </xs:sequence>
+      <xs:attribute name="count" use="required" type="xs:integer"/>
+      <xs:attribute name="note" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="relationship">
+    <xs:complexType mixed="true">
+      <xs:attribute name="adb_id" use="required" type="xs:integer"/>
+      <xs:attribute name="rel_adb_id" use="required" type="xs:integer"/>
+      <xs:attribute name="rel_id" use="required" type="xs:integer"/>
+      <xs:attribute name="relcat" use="required"/>
+      <xs:attribute name="relnotes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="events">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="event"/>
+      </xs:sequence>
+      <xs:attribute name="count" use="required" type="xs:integer"/>
+      <xs:attribute name="note" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="event">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="event_data"/>
+      </xs:sequence>
+      <xs:attribute name="adb_id" use="required" type="xs:integer"/>
+      <xs:attribute name="evn_id" use="required" type="xs:integer"/>
+      <xs:attribute name="evnotes"/>
+      <xs:attribute name="sevcode" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="event_data">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="sbdate"/>
+        <xs:element ref="sbdate_dmy"/>
+        <xs:element minOccurs="0" ref="sbtime"/>
+        <xs:sequence minOccurs="0">
+          <xs:element ref="place"/>
+          <xs:element ref="country"/>
+        </xs:sequence>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="adb_entry_count">
+    <xs:complexType>
+      <xs:attribute name="count" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sbdate">
+    <xs:complexType mixed="true">
+      <xs:attribute name="ccalendar" use="required" type="xs:NCName"/>
+      <xs:attribute name="iday" use="required" type="xs:integer"/>
+      <xs:attribute name="imonth" use="required" type="xs:integer"/>
+      <xs:attribute name="iyear" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sbdate_dmy" type="xs:string"/>
+  <xs:element name="sbtime">
+    <xs:complexType mixed="true">
+      <xs:attribute name="ctimetype" use="required"/>
+      <xs:attribute name="ctzauto" type="xs:NCName"/>
+      <xs:attribute name="itimeacc" type="xs:integer"/>
+      <xs:attribute name="jd_ut" type="xs:decimal"/>
+      <xs:attribute name="sbtime_ampm" use="required"/>
+      <xs:attribute name="stimeacc"/>
+      <xs:attribute name="stimetype" use="required"/>
+      <xs:attribute name="stmerid" use="required"/>
+      <xs:attribute name="sznabbr"/>
+      <xs:attribute name="time_unknown" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="place">
+    <xs:complexType mixed="true">
+      <xs:attribute name="slati" use="required"/>
+      <xs:attribute name="slong" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="country">
+    <xs:complexType mixed="true">
+      <xs:attribute name="sctr" use="required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

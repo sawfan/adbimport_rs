@@ -1,0 +1,17 @@
+[package]
+name = "adbimport"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+quick-xml = { version = "0.38", features = ["serialize"] }
+serde = { version = "1", features = ["derive"] }
+
+clap = { version = "4.6.1", features = ["derive"] }
+
+ged_io = { version = "0.13.0", features = ["json"] }
+
+rkyv = "0.8.16"
+jiff = "0.2.24"
+
+kleio = { path = "../kleio_rs" }

@@ -1,0 +1,10 @@
+/target
+*.rkyv
+examples/trunk_search/dist
+examples/trunk_search/public/sample.rkyv
+examples/trunk_search/target
+/target
+/dist
+
+
+
