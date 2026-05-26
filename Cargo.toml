@@ -14,4 +14,4 @@ ged_io = { version = "0.13.0", features = ["json"] }
 rkyv = "0.8.16"
 jiff = "0.2.24"
 
-kleio = { path = "../kleio_rs" }
+kleio = { path = "../kleio" }
