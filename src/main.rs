@@ -4,12 +4,8 @@ use adbimport::{
     parse_astrodatabank_export_file, parse_astrodatabank_export_file_structured, write_gedcom7_file,
 };
 
-use kleio::{
-    archive_genealogy_archive,
-    save_genealogy_index_archive,
-    GenealogyIndex,
-};
 use clap::{Parser, ValueEnum};
+use kleio::{GenealogyIndex, archive_genealogy_archive, save_genealogy_index_archive};
 
 #[derive(Debug, Clone, Copy, ValueEnum)]
 enum OutputFormat {

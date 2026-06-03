@@ -281,7 +281,10 @@ pub fn parse_astrodatabank_export_structured(
             families_as_child: Vec::new(),
             families_as_spouse: Vec::new(),
             notes: note_ids,
-            source_record: Some(kleio::attribution::SourceRef(format!("adb:{}", entry.adb_id))),
+            source_record: Some(kleio::attribution::SourceRef(format!(
+                "adb:{}",
+                entry.adb_id
+            ))),
             provenance: Default::default(),
         });
     }
