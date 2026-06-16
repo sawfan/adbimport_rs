@@ -57,6 +57,48 @@ fn format_positions(sign: Option<&str>, degmin: Option<&str>) -> String {
     }
 }
 
+fn provenance_attribute_value<'a>(
+    provenance: &'a rkyv::Archived<kleio::Provenance>,
+    key: &str,
+) -> Option<&'a str> {
+    provenance
+        .attributes
+        .iter()
+        .find(|attr| attr.key.as_str() == key)
+        .map(|attr| attr.value.as_str())
+}
+
+fn event_position_fields(event: &rkyv::Archived<kleio::Event>) -> (String, String, String) {
+    let attrs = &event.provenance;
+    (
+        format_positions(
+            provenance_attribute_value(attrs, "positions.sun.sign"),
+            provenance_attribute_value(attrs, "positions.sun.degmin"),
+        ),
+        format_positions(
+            provenance_attribute_value(attrs, "positions.moon.sign"),
+            provenance_attribute_value(attrs, "positions.moon.degmin"),
+        ),
+        format_positions(
+            provenance_attribute_value(attrs, "positions.asc.sign"),
+            provenance_attribute_value(attrs, "positions.asc.degmin"),
+        ),
+    )
+}
+
+fn event_kind_label(kind: &ArchivedEventKind) -> String {
+    match kind {
+        ArchivedEventKind::Birth => "Birth".to_string(),
+        ArchivedEventKind::Death => "Death".to_string(),
+        ArchivedEventKind::Marriage => "Marriage".to_string(),
+        ArchivedEventKind::Baptism => "Baptism".to_string(),
+        ArchivedEventKind::Burial => "Burial".to_string(),
+        ArchivedEventKind::Residence => "Residence".to_string(),
+        ArchivedEventKind::Occupation => "Occupation".to_string(),
+        ArchivedEventKind::Other(s) => s.to_string(),
+    }
+}
+
 fn find_birth_event<'a>(
     store: &'a GenealogyStore,
     person: &rkyv::Archived<adbimport::genealogy::Person>,
@@ -110,14 +152,7 @@ fn person_row(
                 (Some(t), Some(tz)) => format!("{t} {tz}"),
             };
 
-            let (sun, moon, asc) = match event.positions.as_ref() {
-                None => (String::new(), String::new(), String::new()),
-                Some(pos) => (
-                    format_positions(pos.sun_sign.as_deref(), pos.sun_degmin.as_deref()),
-                    format_positions(pos.moon_sign.as_deref(), pos.moon_degmin.as_deref()),
-                    format_positions(pos.asc_sign.as_deref(), pos.asc_degmin.as_deref()),
-                ),
-            };
+            let (sun, moon, asc) = event_position_fields(event);
 
             (date, time, sun, moon, asc)
         }
@@ -223,7 +258,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         match event {
             None => println!("  event_id={id} not found"),
             Some(e) => {
-                let kind = format!("{:?}", e.kind);
+                let kind = event_kind_label(&e.kind);
                 let date = e
                     .date
                     .as_ref()
@@ -232,14 +267,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let time = e.time.as_deref().unwrap_or("<no time>");
                 let tz = e.time_zone.as_deref().unwrap_or("");
 
-                let (sun, moon, asc) = match e.positions.as_ref() {
-                    None => (String::new(), String::new(), String::new()),
-                    Some(pos) => (
-                        format_positions(pos.sun_sign.as_deref(), pos.sun_degmin.as_deref()),
-                        format_positions(pos.moon_sign.as_deref(), pos.moon_degmin.as_deref()),
-                        format_positions(pos.asc_sign.as_deref(), pos.asc_degmin.as_deref()),
-                    ),
-                };
+                let (sun, moon, asc) = event_position_fields(e);
 
                 print_table(
                     &["ID", "Kind", "Date", "Time", "TZ", "Sun", "Moon", "Asc"],
@@ -297,18 +325,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     if let Some(year) = args.year {
-        let events = store.events_by_year(year, args.limit)?;
+        let events = store.events_in_year(year, args.limit)?;
         println!("events_by_year={year} hits={}", events.len());
         for (i, e) in events.iter().enumerate() {
             let id = e.id.0;
-            let kind = match e.kind {
-                ArchivedEventKind::Birth => "Birth".to_string(),
-                ArchivedEventKind::Death => "Death".to_string(),
-                ArchivedEventKind::Marriage => "Marriage".to_string(),
-                ArchivedEventKind::Residence => "Residence".to_string(),
-                ArchivedEventKind::Occupation => "Occupation".to_string(),
-                ArchivedEventKind::Other(ref s) => s.to_string(),
-            };
+            let kind = event_kind_label(&e.kind);
             let date = e
                 .date
                 .as_ref()

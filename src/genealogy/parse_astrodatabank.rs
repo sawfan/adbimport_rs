@@ -108,6 +108,38 @@ enum CoordKind {
     Lon,
 }
 
+// Source-specific values retained during import.
+fn attr(key: &str, value: Option<&String>) -> Option<Attribute> {
+    let value = value?.trim();
+    if value.is_empty() {
+        None
+    } else {
+        Some(Attribute {
+            key: key.to_string(),
+            value: value.to_string(),
+        })
+    }
+}
+
+fn extend_position_attributes(provenance: &mut Provenance, positions: Option<&crate::Positions>) {
+    let Some(positions) = positions else {
+        return;
+    };
+
+    provenance.attributes.extend(
+        [
+            attr("positions.sun.sign", positions.sun_sign.as_ref()),
+            attr("positions.sun.degmin", positions.sun_degmin.as_ref()),
+            attr("positions.moon.sign", positions.moon_sign.as_ref()),
+            attr("positions.moon.degmin", positions.moon_degmin.as_ref()),
+            attr("positions.asc.sign", positions.asc_sign.as_ref()),
+            attr("positions.asc.degmin", positions.asc_degmin.as_ref()),
+        ]
+        .into_iter()
+        .flatten(),
+    );
+}
+
 fn parse_place_lat_lon(place: Option<&XmlPlace>) -> Option<(f64, f64)> {
     let place = place?;
     let lat_s = place.slati.as_deref()?;
@@ -479,14 +511,8 @@ fn map_birth_data(
         .and_then(|t| t.sznabbr.as_ref())
         .cloned();
 
-    let positions = bdata.positions.as_ref().map(|p| AstroPositions {
-        sun_sign: p.sun_sign.clone(),
-        sun_degmin: p.sun_degmin.clone(),
-        moon_sign: p.moon_sign.clone(),
-        moon_degmin: p.moon_degmin.clone(),
-        asc_sign: p.asc_sign.clone(),
-        asc_degmin: p.asc_degmin.clone(),
-    });
+    let mut provenance = Provenance::default();
+    extend_position_attributes(&mut provenance, bdata.positions.as_ref());
 
     (
         Event {
@@ -495,11 +521,10 @@ fn map_birth_data(
             date,
             time,
             time_zone,
-            positions,
             place: place_id,
             description: None,
             participants: Vec::new(),
-            provenance: Default::default(),
+            provenance,
         },
         place_id,
     )
@@ -544,7 +569,6 @@ fn map_birth_data_alt(
         date,
         time: None,
         time_zone: None,
-        positions: None,
         place: place_id,
         description: alt.event_notes.clone(),
         participants: vec![person_id],
@@ -582,7 +606,6 @@ fn map_research_event(idgen: &mut IdGen, ev: &XmlEvent, person_id: PersonId) -> 
         date,
         time: None,
         time_zone: None,
-        positions: None,
         place: None,
         description: ev.evnotes.clone(),
         participants: vec![person_id],

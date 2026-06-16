@@ -45,6 +45,35 @@ mod wasm_app {
         }
     }
 
+    fn provenance_attribute_value<'a>(
+        provenance: &'a rkyv::Archived<kleio::Provenance>,
+        key: &str,
+    ) -> Option<&'a str> {
+        provenance
+            .attributes
+            .iter()
+            .find(|attr| attr.key.as_str() == key)
+            .map(|attr| attr.value.as_str())
+    }
+
+    fn event_position_fields(event: &rkyv::Archived<kleio::Event>) -> (String, String, String) {
+        let attrs = &event.provenance;
+        (
+            format_positions(
+                provenance_attribute_value(attrs, "positions.sun.sign"),
+                provenance_attribute_value(attrs, "positions.sun.degmin"),
+            ),
+            format_positions(
+                provenance_attribute_value(attrs, "positions.moon.sign"),
+                provenance_attribute_value(attrs, "positions.moon.degmin"),
+            ),
+            format_positions(
+                provenance_attribute_value(attrs, "positions.asc.sign"),
+                provenance_attribute_value(attrs, "positions.asc.degmin"),
+            ),
+        )
+    }
+
     fn document() -> Document {
         web_sys::window().expect("no window").document().expect("no document")
     }
@@ -145,14 +174,7 @@ mod wasm_app {
                         (Some(t), Some(tz)) => format!("{t} {tz}"),
                     };
 
-                    let (sun, moon, asc) = match ev.positions.as_ref() {
-                        None => (String::new(), String::new(), String::new()),
-                        Some(pos) => (
-                            format_positions(pos.sun_sign.as_deref(), pos.sun_degmin.as_deref()),
-                            format_positions(pos.moon_sign.as_deref(), pos.moon_degmin.as_deref()),
-                            format_positions(pos.asc_sign.as_deref(), pos.asc_degmin.as_deref()),
-                        ),
-                    };
+                    let (sun, moon, asc) = event_position_fields(ev);
 
                     (date, time, sun, moon, asc)
                 }

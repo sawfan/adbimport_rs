@@ -8,4 +8,5 @@
 
 pub mod parse_astrodatabank;
 
+pub use kleio::*;
 pub use parse_astrodatabank::*;
