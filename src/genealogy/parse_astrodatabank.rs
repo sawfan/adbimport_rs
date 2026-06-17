@@ -484,14 +484,7 @@ fn map_birth_data(
         .sbdate
         .as_ref()
         .and_then(|d| d.value.as_ref())
-        .map(|s| DateValue {
-            original: s.clone(),
-            range: parse_year_from_genealogy_date(s).map(|y| DateRange {
-                earliest_year: Some(y),
-                latest_year: Some(y),
-            }),
-            provenance: Default::default(),
-        });
+        .map(|s| DateValue::from_original(s.clone(), Default::default()));
 
     let place_name = place_key(bdata.place.as_ref(), bdata.country.as_ref());
     let place_id = place_name.clone().map(|name| {
@@ -548,14 +541,7 @@ fn map_birth_data_alt(
         .sbdate
         .as_ref()
         .and_then(|d| d.value.as_ref())
-        .map(|s| DateValue {
-            original: s.clone(),
-            range: parse_year_from_genealogy_date(s).map(|y| DateRange {
-                earliest_year: Some(y),
-                latest_year: Some(y),
-            }),
-            provenance: Default::default(),
-        });
+        .map(|s| DateValue::from_original(s.clone(), Default::default()));
 
     let place_name = place_key(alt.place.as_ref(), alt.country.as_ref());
     let place_id = place_name.clone().map(|name| {
@@ -591,14 +577,7 @@ fn map_research_event(idgen: &mut IdGen, ev: &XmlEvent, person_id: PersonId) -> 
         .as_ref()
         .and_then(|d| d.sbdate.as_ref())
         .and_then(|d| d.value.as_ref())
-        .map(|s| DateValue {
-            original: s.clone(),
-            range: parse_year_from_genealogy_date(s).map(|y| DateRange {
-                earliest_year: Some(y),
-                latest_year: Some(y),
-            }),
-            provenance: Default::default(),
-        });
+        .map(|s| DateValue::from_original(s.clone(), Default::default()));
 
     Some(Event {
         id: EventId(idgen.next_event_id()),
